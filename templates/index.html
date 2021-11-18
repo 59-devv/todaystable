@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+
+    <title>오늘의 식탁</title>
+
+    <meta charset="UTF-8" />
+
+    <meta property="og:site_name" content="오늘의 식탁">
+    <meta property="og:title" content='마이페이지'>
+    <meta property="og:image" content="../static/imgs/og_image.png">
+    <meta property="og:description" content="건강한 음식을 추천해드려요!">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://todays-table.shop">
+
+
+    <!-- Bulma CSS 링크 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css" />
+  
+    <!-- CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="../static/styles/reset.css" />
+    <link rel="stylesheet" href="../static/styles/login.css" />
+    <link rel="icon" href="../static/imgs/favicon.ico">
+    
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <script>
+      // is-hidden을 껐다가 켤 수 있는 토글 기능 (toggleClass)
+      // 회원가입 버튼을 클릭할 때 실행함
+      function toggle_sign_up() {
+        $(".h2-sign-in").toggleClass("is-hidden");
+        $(".h2-sign-up").toggleClass("is-hidden");
+        $("#sign-up-box").toggleClass("is-hidden");
+        $("#div-sign-in-or-up").toggleClass("is-hidden");
+        $("#btn-check-dup").toggleClass("is-hidden");
+        $("#help-id").toggleClass("is-hidden");
+        $("#help-password").toggleClass("is-hidden");
+        $("#help-password2").toggleClass("is-hidden");
+        $("#input-nickname").toggleClass("is-hidden");
+        $("#nicknameIcon").toggleClass("is-hidden");
+        $("#help-nickname").toggleClass("is-hidden");
+      }
+
+      // 아이디 확인 정규표현식
+      function is_nickname(asValue) {
+        var regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{2,10}$/;
+        // True/False 형태로 반환
+        return regExp.test(asValue);
+      }
+
+      // 비밀번호 확인 정규표현식
+      function is_password(asValue) {
+        var regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
+        // True/False 형태로 반환
+        return regExp.test(asValue);
+      }
+
+      // 아이디 체크 기능
+      function check_dup() {
+        let username = $("#input-username").val();
+        //입력칸이 공백이면 text 표시하고 포커스는 입력칸
+        if (username == "") {
+          $("#help-id")
+            .text("아이디를 입력해주세요.")
+            .removeClass("is-safe")
+            .addClass("is-danger");
+          $("#input-username").focus();
+          return;
+        }
+        //입력한 값이 정규표현식에 맞지 않으면 text 표시하고 포커스는 입력칸
+        if (!is_nickname(username)) {
+          $("#help-id")
+            .text(
+              "아이디의 형식을 확인해주세요. 영문과 숫자, 일부 특수문자(._-) 사용 가능. 2-10자 길이"
+            )
+            .removeClass("is-safe")
+            .addClass("is-danger");
+          $("#input-username").focus();
+          return;
+        }
+        // 아이디 중복체크
+        $("#help-id").addClass("is-loading");
+        $.ajax({
+          type: "POST",
+          url: "/api/sign_up/check_dup",
+          data: {
+            username_give: username,
+          },
+          success: function (response) {
+            //입력한 값이 exists로 불러온 db의 username에 일치하면 text 표시
+            if (response["exists"]) {
+              $("#help-id")
+                .text("이미 존재하는 아이디입니다.")
+                .removeClass("is-safe")
+                .addClass("is-danger");
+              $("#input-username").focus();
+              //아니면 사용가능하다는 text 표시
+            } else {
+              $("#help-id")
+                .text("사용할 수 있는 아이디입니다.")
+                .removeClass("is-danger")
+                .addClass("is-success");
+            }
+            //help-id에서 is-loading 지우기
+            $("#help-id").removeClass("is-loading");
+          },
+        });
+      }
+      //회원가입 기능
+      function sign_up() {
+        let username = $("#input-username").val();
+        let password = $("#input-password").val();
+        let password2 = $("#input-password2").val();
+        let nickname = $("#input-nickname").val();
+
+        //아이디가 안맞으면 회원가입버튼 눌렀을 때 alert
+        if ($("#help-id").hasClass("is-danger")) {
+          alert("아이디를 다시 확인해주세요.");
+          return;
+          //중복확인 안했으면 회원가입버튼 눌렀을 때 alert
+        } else if (!$("#help-id").hasClass("is-success")) {
+          alert("아이디 중복확인을 해주세요.");
+          return;
+        }
+        //닉네임 입력값이 없으면 text 표시
+        if(nickname == ""){
+          $("#help-nickname")
+            .text("닉네임을 입력해 주세요")
+          return
+        }else{
+          //닉네임 입력했으면 text를 공백으로 표시
+          $("#help-nickname")
+            .text("")
+        }
+          //비밀번호 입력 안했으면 text 표시
+        if (password == "") {
+          $("#help-password")
+            .text("비밀번호를 입력해주세요.")
+            .removeClass("is-safe")
+            .addClass("is-danger");
+          $("#input-password").focus();
+          return;
+          //비밀번호 입력값이 정규표현식에 맞지 않으면 text 표시
+        } else if (!is_password(password)) {
+          $("#help-password")
+            .text(
+              "비밀번호의 형식을 확인해주세요. 영문과 숫자 필수 포함, 특수문자(!@#$%^&*) 사용가능 8-20자"
+            )
+            .removeClass("is-safe")
+            .addClass("is-danger");
+          $("#input-password").focus();
+          return;
+        } else {
+          $("#help-password")
+            .text("사용할 수 있는 비밀번호입니다.")
+            .removeClass("is-danger")
+            .addClass("is-success");
+        }
+        //두번째 칸의 비밀번호 입력값이 없으면 text 표시
+        if (password2 == "") {
+          $("#help-password2")
+            .text("비밀번호를 입력해주세요.")
+            .removeClass("is-safe")
+            .addClass("is-danger");
+          $("#input-password2").focus();
+          return;
+          //두번째 칸의 입력한 비밀번호가 첫번째 칸과 일치하지 않으면 text 표시
+        } else if (password2 != password) {
+          $("#help-password2")
+            .text("비밀번호가 일치하지 않습니다.")
+            .removeClass("is-safe")
+            .addClass("is-danger");
+          $("#input-password2").focus();
+          return;
+        } else {
+          //두번째 칸에 입력한 비밀번호가 첫번째 칸과 일치하면 text 표시
+          $("#help-password2")
+            .text("비밀번호가 일치합니다.")
+            .removeClass("is-danger")
+            .addClass("is-success");
+        }
+        //회원가입에 사용한 아이디, 닉네임, 비밀번호를 db에 저장할 수 있도록 app.py로 보냄
+        $.ajax({
+          type: "POST",
+          url: "/api/sign_up",
+          data: {
+            username_give: username,
+            password_give: password,
+            nickname_give: nickname,
+          },
+          //회원가입 성공, 로그인페이지로 이동
+          success: function (response) {
+            alert("회원가입을 축하드립니다!");
+            window.location.replace("/index");
+          },
+        });
+      }
+
+      //로그인 기능
+      function sign_in() {
+        let username = $("#input-username").val();
+        let password = $("#input-password").val();
+        // 입력값이 공백이면 text 표시
+        if (username == "") {
+          $("#help-id-login").text("아이디를 입력해주세요.");
+          $("#input-username").focus();
+          return;
+        } else {
+          $("#help-id-login").text("");
+        }
+        //입력값이 공백이면 text 표시
+        if (password == "") {
+          $("#help-password-login").text("비밀번호를 입력해주세요.");
+          $("#input-password").focus();
+          return;
+        } else {
+          $("#help-password-login").text("");
+        }
+        $.ajax({
+          type: "POST",
+          url: "/api/sign_in",
+          data: {
+            username_give: username,
+            password_give: password,
+          },
+          //로그인 성공
+          success: function (response) {
+            if (response["result"] == "success") {
+              $.cookie("mytoken", response["token"], { path: "/" });
+              window.location.replace("/");
+            } else {
+              alert(response["msg"]);
+            }
+          },
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="login">
+      <div class="bg_left"></div>
+      <div class="bg_right"></div>
+      <h1>
+        <a href="/">
+          <img src="../static/imgs/logo.PNG" alt="오늘 뭐먹이지?"/></a>
+      </h1>
+      <section class="section">
+        <div class="container">
+
+          <!-- 로그인 상자 -->
+          <div class="box form">
+            <article class="media">
+              <div class="media-content">
+                <div class="content">
+
+
+                  <!-- 아이디 입력,중복 -->
+                  <div class="field has-addons">
+                    <div class="control has-icons-left" style="width: 100%">
+                      <h2 class="h2-sign-up">SIGN IN</h2>
+                      <h2 class="h2-sign-in is-hidden">SIGN UP</h2>
+                      <div class="bar"></div>
+                      <div class="fild flex">
+                        <input 
+                          id="input-username"
+                          class="input"
+                          type="text"
+                          placeholder="아이디"/>
+                        <span class="icon is-small is-left">
+                          <i class="fa fa-user"></i>
+                        </span>
+                        <button 
+                          id="btn-check-dup"
+                          class="button is-hidden is-sparta"
+                          onclick="check_dup()">
+                          중복확인
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <p id="help-id" class="help is-hidden">
+                    아이디는 2-10자의 영문과 숫자와 일부 특수문자(._-)만 입력
+                    가능합니다.
+                  </p>
+                  <p id="help-id-login" class="help is-danger"></p>
+
+
+                  <!-- 닉네임 입력 -->
+                  <div class="control has-icons-left" style="width: 100%">
+                    <input
+                      id="input-nickname"
+                      class="input is-hidden"
+                      type="text"
+                      placeholder="닉네임" />
+                    <span
+                      class="icon is-small is-left is-hidden"
+                      id="nicknameIcon">
+                      <i class="fa fa-user"></i>
+                    </span>
+                  </div>
+                  <p id="help-nickname" class="is-hidden"></p>
+
+
+                  <!-- 비밀번호 입력 -->
+                  <div class="field">
+                    <div class="control has-icons-left">
+                      <input
+                        id="input-password"
+                        class="input"
+                        type="password"
+                        placeholder="비밀번호"/>
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                      </span>
+                    </div>
+                    <p id="help-password" class="help is-hidden">
+                      영문과 숫자 조합의 8-20자의 비밀번호를 설정해주세요.
+                      특수문자(!@#$%^&*)도 사용 가능합니다.
+                    </p>
+                    <p id="help-password-login" class="help is-danger"></p>
+                  </div>
+                </div>
+
+
+                <!-- 로그인, 회원가입으로 가는 버튼 -->
+                <div id="div-sign-in-or-up" class="has-text-centered">
+                  <button
+                    class="sign-up-btn level-item button is-sparta"
+                    onclick="sign_in()">
+                    로그인
+                  </button>
+                  <h4>회원이 아니신가요?</h4>
+                  <span
+                    class="sign-in-btn is-sparta is-outlined"
+                    onclick="toggle_sign_up()">
+                    Sign Up
+                  </span>
+                </div>
+
+
+                <div id="sign-up-box" class="is-hidden">
+                  <!-- 비밀번호 재입력 -->
+                  <div class="mb-5">
+                    <div class="field">
+                      <div class="control has-icons-left" style="width: 100%">
+                        <input
+                          id="input-password2"
+                          class="input"
+                          type="password"
+                          placeholder="비밀번호 재입력"/>
+                        <span class="icon is-small is-left">
+                          <i class="fa fa-lock"></i>
+                        </span>
+                      </div>
+                      <p id="help-password2" class="help is-hidden">
+                        비밀번호를 다시 한 번 입력해주세요.
+                      </p>
+                    </div>
+                  </div>
+
+
+                  <!-- 회원가입, 취소버튼 -->
+                  <nav class="level is-mobile">
+                    <button
+                      class="level-item button is-sparta"
+                      onclick="sign_up()">
+                      회원가입
+                    </button>
+                    <button
+                      class="level-item button is-sparta is-outlined"
+                      onclick="toggle_sign_up()">
+                      취소
+                    </button>
+                  </nav>
+
+
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </body>
+  <script>
+
+    // 엔터시 로그인 버튼클릭
+    $("input").keydown(function(key) { 
+      if (key.keyCode == 13) { 
+        $(".sign-up-btn").click(); 
+      } 
+    });
+
+  </script>
+</html>

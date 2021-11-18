@@ -1,0 +1,26 @@
+/*********header *********/
+#header { position: sticky; display: flex; top: 0; justify-content: space-between; height: 100px; background-color: #ff4253; -webkit-box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.3); box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.3); z-index: 10; } 
+#header .logo { height: 100px; padding: 0 20px; box-sizing: border-box; cursor: pointer;} 
+#header .user { display: flex; align-items: center; justify-content: space-between; cursor: pointer;} 
+#header .user:hover .user-name,
+#header .user:hover img {opacity: .7; transition: all .5s;}
+#header .user_page {cursor:default !important;}
+#header .user_page:hover .user-name,
+#header .user_page:hover img{opacity: 1;}
+#header .user .user-name { font-size: 24px; font-weight: bold; color: white; } 
+#header .user img { width: 40px; height: 40px; border-radius: 50%; margin: 0 50px 0 20px; } 
+#header .nav { visibility: hidden; position: absolute; top: 100px; right: 50px; width: 200px; border-radius: 10px; background-color: white; opacity: 0; text-align: center; font-size: 24px; font-weight: bold; line-height: 70px; cursor: pointer; transition: all 0.5s; } 
+.show { visibility: visible !important; opacity: 1 !important; } 
+
+/********* footer *********/
+#footer { margin: 100px 0 50px; text-align: center; } 
+
+/********* top-btn *********/
+#top-btn { position: fixed; display: none; bottom: 20px; right: 20px; border: none; border-radius: 10px; letter-spacing: 1px; color: #fff; background-color: rgba(85, 85, 85, 0.5); font-size: 1.5rem; font-weight: 200; padding: 0.5rem 1rem; z-index: 11; } 
+#top-btn:hover { opacity: 0.6; } 
+
+/* 태블릿 세로, 모바일 가로*/
+@media (max-width: 480px){
+ #header .user .user-name { display: none; } 
+ #header .nav { right: 20px; width: 120px; height: 100px; font-size: 20px; line-height:50px;}
+ }

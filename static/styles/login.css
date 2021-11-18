@@ -1,0 +1,36 @@
+#login { height: 100%; } 
+
+#login .bg_left,
+#login .bg_right { position: absolute; height: 100%; width: 50%; z-index: -1; } 
+#login .bg_left { background-color: #ff4452; } 
+#login .bg_right { margin-left: 50%; background: url(../imgs/login_img.png) no-repeat 6vw 5vh; background-size: 900px; } 
+#login h1 img { width: 380px; padding: 20px 0 0 20px; } 
+#login .section { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 0; min-width: 400px; width: 20%; } 
+#login .container { margin: 0 20px; } 
+.control.has-icons-left .icon,
+.control.has-icons-right .icon { top: auto !important; } 
+#login .form { border-radius: 20px; padding: 20px 30px 40px; -webkit-box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.38); box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.38); } 
+
+#login .form .h2-sign-in,
+#login .form .h2-sign-up { text-align: center; margin: 20px 0 0; } 
+#login .form .bar { width: 30px; height: 2px; margin: 25px auto; background-color: #e8344e; } 
+#login .form .button.is-sparta { background-color: #e8344e; border-color: transparent; color: white; } 
+#login .form h4 { display: inline; } 
+#login .form .sign-up-btn { width: 90%; border-radius: 20px; margin: 30px auto 40px; } 
+#login .form .sign-in-btn { margin-left: 10px; font-weight: bold; color: #e8344e; cursor: pointer; } 
+#help-nickname { display: block; margin-top: 0.25rem; margin-bottom: 1em; font-size: .75rem; color: #e8344e; } 
+.button .is-sparta .is-outlined { background-color: transparent; border-color: #e8344e; color: white; } 
+.help { color: gray; } 
+.flex { display: flex; } 
+
+/* 태블릿 가로 */
+@media (max-width:768px){ 
+  #login h1 img { width: 220px; padding: 10px} 
+  #login .media-content { overflow-x: revert;}
+}
+
+/* 태블릿 세로, 모바일 가로*/ 
+@media (max-width:480px){
+  #login h1 img { width: 180px; padding: 10px} 
+  #login .section {min-width: 340px; }
+}

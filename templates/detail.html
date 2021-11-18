@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+
+    <title>오늘의 식탁</title>
+
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta property="og:site_name" content="오늘의 식탁">
+    <meta property="og:title" content='마이페이지'>
+    <meta property="og:image" content="../static/imgs/og_image.png">
+    <meta property="og:description" content="건강한 음식을 추천해드려요!">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://todays-table.shop">
+
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap"
+          rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/styles/detail.css"/>
+    <link rel="stylesheet" href="/static/styles/reset.css"/>
+    <link rel="stylesheet" href="/static/styles/common.css"/>
+    <link rel="icon" href="../static/imgs/favicon.ico">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script defer src="../static/scripts/common.js"></script>
+
+    <script>
+      $(document).ready(function  () {
+        get_comments("{{ food.no }}","{{ nickname }}")
+      })
+
+        // 댓글 저장
+      function save_comment() {
+        let comment = $('.input-comment').val()
+        let num = "{{ food.no }}"
+        let today = new Date().toISOString()
+        // 댓글을단 음식의 고유번호와 댓글, 오늘 날짜 전송
+        $.ajax({
+          type: 'POST',
+          url: '/api/save_comment',
+          data: {
+            comment_give: comment,
+            num_give: num,
+            time_give: today
+          },
+          //완료시 알림과, 윈도우 리로딩
+          success: function (response) {
+            alert(response["msg"])
+            window.location.reload()
+          }
+        })
+      }
+
+      // 댓글 삭제
+      function delete_comment(username, comment) {
+        // 유저의 이름과 댓글을 가져옴
+        $.ajax({
+          type: "POST",
+          url: '/api/delete_comment',
+          data: {
+            username_give: username,
+            comment_give: comment
+          },
+          //완료시 알림과, 윈도우 리로딩
+          success: function (response) {
+            alert(response["msg"])
+            window.location.reload()
+          }
+        });
+      }
+
+        // 댓글 불러오기
+      function get_comments(food_num,nickname) {
+        //유저 정보와 음식정보 가져옴
+        $.ajax({
+          type: "POST",
+          url: "/api/get_comments",
+          data: {
+            "num_give": food_num
+          },
+          success: function (response) {
+            if (response["result"] == "success") {
+              let comments = response["comments"]
+              // for문으로 현재 페이지음식에 달린 댓글들 전부 가져오기
+              for (let i = 0; i < comments.length; i++) {
+                let comment = comments[i]
+                if (comment["num"] == food_num) {
+                  let time_post = new Date(comment["time"])
+                  let time_before = time2str(time_post)
+                  // 댓글 폼(유저의 닉네임,프로필 사진, 댓글,날짜 사용)
+                  let html_temp1 = `<div class="comment">
+                                        <div class="user">
+                                            <img class="user-profil" src="../static/${comment["profile_pic_real"]}" alt="유저 프로필사진">
+                                            <p class="user-name"> ${comment["nickname"]}</p>
+                                        </div>
+                                        <p class="comment-text">
+                                            ${comment["comment"]}
+                                        </p>
+                                        <div class="comment-bottom">
+                                            <span class="date">${time_before}</span>
+                                            `
+                    let html_temp2 = ``
+                    // 본인의 댓글만 삭제버튼이 보임
+                    // 댓글작성자와 본인의 닉네임이 맞으면 삭제 버튼 생성, 아니면 생성하지 않음
+                    if(comment["nickname"] == nickname ){
+                        html_temp2 =  `<button class="delete-btn" onclick="delete_comment('${comment["username"]}','${comment["comment"]}')">삭제</button>`
+                    }else{
+                        html_temp2 = ``
+                    }
+                    let html_temp3 = ` </div>
+                                    </div>`
+                    $('#comments').append(html_temp1 + html_temp2 + html_temp3)
+                    //유저 이름 Header에 넣기
+                  }
+                }
+              }
+            }
+          })
+        }
+    </script>
+
+  </head>
+  <body>
+
+    <!-- header -->
+    <header id="header">
+      <h1><a onclick="window.location.href='/'"><img class="logo" src="../static/imgs/logo.PNG" alt="오늘 뭐먹지?"></a></h1>
+      <div tabindex="0" class="user">
+        <span class="user-name"><span class="user-name-db">{{ nickname }} </span>님</span>
+        <img src="../static/{{ user_pic }}" alt="프로필">
+          <div class="nav">  <div onclick="userpage()"> 마이페이지</div> <div onclick="sign_out()">로그아웃</div> </div>
+      </div>
+    </header>
+
+    <!-- 스크롤 up 버튼 -->
+    <button id="top-btn" type="button">Top</button>
+    <div class="wrap">
+
+      <!-- 상세 이미지 -->
+      <section id="detail-image">
+        <div class="h2"><h2 class="title"><span class="menu">{{food.menu_name}}</span></h2></div>
+        <div class="ingredient-list">
+          <img class="food-img" src="{{food.img}}" alt="음식명도 넘겨받기">
+          <div class="circle circle-1">칼로리<p class="calorie">{{food.calorie}}<span class="unit">cal</span></p></div>
+          <div class="circle circle-2">나트륨<p class="natrium">{{food.natrium}}<span class="unit">mg</span></p></div>
+          <div class="circle circle-3">탄수화물<p class="carbo">{{food.carbo}}<span class="unit">g</span></p></div>
+          <div class="circle circle-4">단백질<p class="protein">{{food.protein}}<span class="unit">g</span></p></div>
+          <div class="circle circle-5">지방<p class="fat">{{food.fat}}<span class="unit">g</span></p></div>
+        </div>
+      </section>
+      
+      <!-- 상세 설명글 -->
+      <section id="detail-text">
+        <div class="h2"><h2>RECIPE</h2></div>
+        <div class="recipe">
+          <div class="recipe-img">
+            {% for img in foodImg %}
+            <div class="img-box">
+              <img class="process-img" src="{{foodImg[img]}}" alt="">
+            </div>
+           {% endfor %}
+          </div>
+          <div class="recipe-text">
+            <p class="ingredient"><strong>재료 :</strong> {{food.ingredient}}</p>
+            {% for manual in receipe %}
+              <p>{{receipe[manual]}}</p>  
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <!-- 댓글 -->
+      <section id="comments">
+        <form action="" class="form-comment">
+            <input class="input-comment" type="text" placeholder="댓글 입력">
+            <button type="submit" onclick=save_comment()>입력</button>
+        </form>
+      </section>
+
+      <!-- footer -->
+      <footer id="footer">
+        © 2021 오늘뭐먹지? by 5조
+      </footer>
+
+    </div>
+  </body>
+  <script>
+
+    //스크롤에 따른 애니메이션
+    $(window).scroll(function () {
+      //스크롤이 400만큼 내려올시 show클래스를 붙인다.
+        var height = $(document).scrollTop();
+        if(height > 400){
+            $("#detail-text").addClass("show")
+        }
+      //스크롤이 1300만큼 내려올시 show클래스를 붙인다.
+        if(height > 1300){
+            $("#comments").addClass("show")
+        }
+    }); 
+
+  </script>
+</html>

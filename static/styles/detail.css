@@ -1,0 +1,92 @@
+body { background-color: #FFE4E0; color: #4a4a4a;}
+.wrap { max-width: 1024px; margin: auto; padding: 20px}
+.blind { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0,0,0,0);}
+.show { opacity: 1 !important;}
+
+
+/* 상세 이미지 */
+#detail-image { border-radius: 10px; padding: 0 10px 40px; margin: 80px 90px 0; background-color: white; transition: all 1s; -webkit-box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.15); box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.15);}
+#detail-image .h2 { text-align: center; color: black;}
+#detail-image .title { display: inline-block; padding: 0 30px; margin: 0 auto 0px; background-color: #F8ADA9; transform: translateY(-50%); text-align: center; line-height: 60px; font-size: 34px; font-weight: bold;}
+#detail-image .ingredient-list {position: relative; }
+#detail-image .food-img{ width: 550px; margin: 56px auto 74px;-webkit-box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.2);box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.2); clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);}
+#detail-image .circle { position: absolute; width: 180px; height: 180px; text-align: center; padding: 50px 0; border-radius: 50%; background-color: #FF4253;  -webkit-box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.2);box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.2); color: white; box-sizing: border-box; font-size: 25px; }
+#detail-image .circle-1{ top: -70px; left: 50%; transform: translateX(-50%);}
+#detail-image .circle-2{ top: 150px; left: 50px;}
+#detail-image .circle-3{ top: 150px; right: 50px;}
+#detail-image .circle-4{ bottom: -80px; left: 140px;}
+#detail-image .circle-5{ bottom: -80px; right: 140px;}
+#detail-image .circle p { margin-top: 10px; font-weight: bold; font-size: 50px;}
+#detail-image .circle .unit { font-size: 25px;}
+
+/* 상세 설명글 */
+#detail-text{ margin:50px 0 100px; opacity: 0; transition: all 1.5s;}
+#detail-text .h2 { text-align: center; color: black;}
+#detail-text .h2 h2 { display: inline-block; padding: 0 50px; transform: translateY(50%); font-size: 45px; font-weight: bold; line-height: 60px; background-color: #F8ADA9;}
+#detail-text .recipe{ padding: 50px 30px 30px; border-radius: 10px; margin: 0 90px; background-color: white; -webkit-box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.15); box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.15);}
+#detail-text .recipe-img{ display: flex; flex-wrap: wrap; justify-content:space-around;}
+#detail-text .recipe-img .img-box{ margin-bottom: 15px}
+#detail-text .recipe-img .process-img{ height: 200px;}
+#detail-text .recipe-text{ margin-top: 40px;}
+#detail-text .recipe-text p{ font-size: 20px; line-height: 40px;}
+#detail-text .recipe-text .ingredient{ margin-bottom: 20px; font-size: 16px;line-height: 30px;}
+#detail-text .recipe-text .ingredient strong{ font-weight: bold;}
+
+
+/* 댓글 */
+#comments {margin: 0 90px; opacity: 0; transition: all 1.5s;}
+#comments .comment{ padding: 20px; border: 3px solid #F8ADA9; border-radius: 10px; background-color: #F8ADA9; }
+#comments .form-comment {display: flex; justify-content: space-between; border-radius: 10px; margin: 0 0 30px; width: 100%; background-color: white; -webkit-box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.15);box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.15);}
+#comments .form-comment .input-comment {width: 100%; margin: 0; border: 0; padding: 20px; border-radius: 10px; font-size: 18px;}
+#comments .form-comment .input-comment::placeholder {font-size: 18px;}
+#comments .form-comment button {width: 13%; margin: 0; border: 0; border-radius: 10px; padding: 10px; background-color: #FF4253; color: white; font-size: 18px; font-weight: bolder; cursor: pointer; transition: all .5s;}
+#comments .form-comment button:hover {opacity: .6;}
+#comments .comment {margin-bottom: 20px; -webkit-box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.15);box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.15);}
+#comments .comment .user{display: flex; margin-bottom: 10px;}
+#comments .comment .user .user-profil{ width: 50px; height: 50px; border-radius: 50%;}
+#comments .comment .user .user-name{margin-left: 10px; font-size: 25px; font-weight: bold; line-height: 50px;}
+#comments .comment .comment-text {line-height: 30px; font-size: 20px;}
+#comments .comment .comment-bottom {display: flex; justify-content: flex-end;}
+#comments .comment .comment-bottom .date,
+#comments .comment .comment-bottom .delete-btn {display: block; width: 80px;  line-height: 30px;}
+#comments .comment .comment-bottom .delete-btn {margin: 0 10px; border: 1px solid gray; border-radius: 10px; background-color: white; color: rgb(156, 156, 156); font-weight: bold; font-size: 17px; cursor: pointer; transition: all .5s;}
+#comments .comment .comment-bottom .delete-btn:hover{border: 1px solid rgb(77, 76, 76); color: black;}
+
+
+#pentagon {z-index: 10px; border: 1px solid red;}
+/* pc */
+@media (max-width:1024px) { 
+  .wrap { max-width: 768px;}
+  #detail-image {margin: 80px 0 0;}
+  #detail-image .ingredient-list {height: 700px;}
+  #detail-image .food-img {width: 500px;}
+  #detail-image .circle {width: 180px; height: 180px;}
+  #detail-image .circle-2{top: 150px; left: 30px;}
+  #detail-image .circle-3{top: 150px; right: 30px;}
+  #detail-image .circle-4{bottom: 50px; left: 120px;}
+  #detail-image .circle-5{bottom: 50px; right: 120px;}
+  #detail-text .recipe {margin: 0;}
+  #comments {margin: 0;}
+} 
+/* 태블릿 가로 */
+@media (max-width:768px){ 
+  .wrap { max-width: 480px; margin: auto; padding: 20px}
+  #detail-image {margin-top: 40px;}
+  #detail-image .title { font-size: 22px;}
+  #detail-image .ingredient-list {height: auto;}
+  #detail-image .food-img {position: static; width: 90%; margin: 10px auto; border-radius: 10px; transform: translate(0);  clip-path:none; }
+  #detail-image .pentagon-img {display: none;}
+  #detail-image .circle {position: static; display: inline-block; width: 80px; height: 80px; margin: 3px; padding: 18px 0; font-size: 18px;}
+  #detail-image .circle-1{top: 0; left: 50%; transform: translateX(0);}
+  #detail-image .circle-2{top: 180px; left: 50px;}
+  #detail-image .circle-3{top: 180px; right: 50px;}
+  #detail-image .circle-4{bottom: 30px; left: 120px;}
+  #detail-image .circle-5{bottom: 30px; right: 120px;}
+  #detail-image .circle p {margin-top: 5px; font-weight: bold; font-size: 20px;}
+  #detail-image .circle .unit {font-size: 16px;}
+
+  #detail-text {margin-bottom: 50px;}
+  #detail-text .recipe-text p{ margin-bottom: 5px;font-size: 16px; line-height: 20px; }
+  #detail-text .recipe-text .ingredient{ margin-bottom: 20px; font-size: 12px;line-height: 20px;}
+
+} 

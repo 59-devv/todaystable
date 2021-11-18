@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+
+    <title>오늘의 식탁</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta property="og:site_name" content="오늘의 식탁">
+    <meta property="og:title" content='마이페이지'>
+    <meta property="og:image" content="../static/imgs/og_image.png">
+    <meta property="og:description" content="건강한 음식을 추천해드려요!">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://todays-table.shop">
+
+    <!-- Bulma -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"/>
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet"/>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/styles/user.css" />
+    <link rel="stylesheet" href="/static/styles/reset.css" />
+    <link rel="stylesheet" href="/static/styles/common.css" />
+    <link rel="icon" href="../static/imgs/favicon.ico">
+
+    <!-- font awesome 추가 -->
+    <script src="https://kit.fontawesome.com/28653e43c1.js" crossorigin="anonymous"></script>
+    <script src="/static/scripts/main.js"></script>
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"></script>
+    <script defer src="../static/scripts/common.js"></script>
+
+
+    <script>
+      //document가 다 불러온 후 다음 함수 실행
+      $(document).ready(function () {
+        // 내가쓴 댓글 불러오기 함수
+        get_my_comments()
+      })
+
+      //프로필 업로드
+      function update_profile() {
+        //유저의 이름과 파일데이터를 가져온다.
+        let nickname = $('#input-name').val()
+        let file = $('#input-pic')[0].files[0]
+        let form_data = new FormData()
+        form_data.append("file_give", file)
+        form_data.append("nickname_give", nickname)
+        //가져온 데이터를 db에 저장
+        $.ajax({
+          type: "POST",
+          url: "/update_profile",
+          data: form_data,
+          cache: false,
+          contentType: false,
+          processData: false,
+          //완료시 완료알림과 리로딩
+          success: function (response) {
+            if (response["result"] == "success") {
+              alert(response["msg"])
+              window.location.reload()
+
+            }
+          }
+        });
+      }
+
+        // 본인이 쓴 댓글 제거
+      function delete_comment(username, comment) {
+        //유저의 이름과 선택한 댓글을 가져온다.
+        $.ajax({
+          type: "POST",
+          url: '/api/delete_comment',
+          data: {
+            username_give: username,
+            comment_give: comment
+          },
+          //완료시 완료알림과 리로딩
+          success: function (response) {
+            alert(response["msg"])
+            window.location.reload()
+          }
+        });
+      }
+
+        // 내가쓴 댓글 불러오기
+    function get_my_comments() {
+      $.ajax({
+        type: "GET",
+        url: "/api/get_my_comments",
+        data: {},
+        // 내가쓴 댓글 불러오기 성공시,
+        // html_temp를 댓글들의 숫자만큼 append
+        success: function (response) {
+          let comments = {{ comments|tojson }};
+          let food_info = {{ food_info|tojson }};
+          let profile_pic = '{{ user_pic }}';
+          for (let i = 0; i < comments.length; i++) {
+            let comment = comments[i]
+            let time_post = new Date(comment["time"])
+            let time_before = time2str(time_post)
+            let html_temp = `<div class="comment">
+                                <div class="user">
+                                    <img class="user-profil" src="../static/${profile_pic}" alt="유저 프로필사진">
+                                    <p class="user-name"> ${comment["nickname"]}</p>
+                                </div>
+
+                                <p class="food_name"><a href="/detail/${comment["num"]}"> ${food_info[comment["num"]]} </a></p>
+                                <p class="comment-text">${comment["comment"]}</p>
+                                <div class="comment-bottom">
+                                    <span class="date">${time_before}</span>
+                                    <button class="delete-btn" onclick="delete_comment('${comment["username"]}','${comment["comment"]}')">삭제</button>
+                                </div>
+                            </div>`
+            $('#comments').append(html_temp)
+          }
+        }
+      })
+    }
+
+    </script>
+
+</head>
+<body>
+
+  <!-- header -->
+  <header id="header">
+    <h1><a onclick="window.location.href='/'"><img class="logo" src="../static/imgs/logo.PNG" alt="오늘 뭐먹지?"></a></h1>
+    <div tabindex="0" class="user user_page">
+      <span class="user-name"><span class="user-name-db">{{ nickname }} </span>님</span>
+      <img src="../static/{{ user_pic }}" alt="프로필">
+      <div class="nav"> <div onclick="sign_out()">로그아웃</div> </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+  <div class="main-container">
+
+    <!-- 프로필 -->
+    <section class="profile-top">
+      <div class="profile-info">
+        <article class="user-info">
+          <figure class="media-left" style="align-self: center">
+            <img
+              class="user-profile"
+              src="../static/{{ user_pic }}"/>
+            <div class="user-box">
+              <p class="user-nickname">{{ nickname }}</p>
+              <p class="user-name">@{{ user_info.username }}</p>
+            </div>
+          </figure>
+        </article>
+        <nav id="btns-me" class="level is-mobile" style="margin-top: 2rem">
+          <a
+            class="button level-item has-text-centered is-sparta"
+            aria-label="edit"
+            onclick='$("#modal-edit").addClass("is-active").removeClass("is-hidden")'>
+            프로필 수정&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-pencil" aria-hidden="true"></i></span>
+          </a>
+
+          <a
+            class="
+              button
+              level-item
+              has-text-centered
+              is-sparta is-outlined
+            "
+            aria-label="logout"
+            onclick="sign_out()">
+            로그아웃&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>
+          </a>
+        </nav>
+
+        <!-- 프로필수정 모달창 -->
+        <div class="modal is-hidden" id="modal-edit">
+          <div
+            class="modal-background"
+            onclick='$("#modal-edit").addClass("is-hidden").removeClass("is-active")'></div>
+          <div class="modal-content">
+            <div class="box">
+              <article class="media">
+                <div class="media-content">
+                  <div class="field">
+                    <label class="label" for="input-name">닉네임</label>
+                    <p class="control">
+                      <input
+                        id="input-name"
+                        class="input"
+                        placeholder="{{ nickname }}"
+                        value="{{ nickname }}" />
+                    </p>
+                  </div>
+                  <div class="field">
+                    <label class="label" for="input-pic">프로필 사진</label>
+                    <div class="control is-expanded">
+                      <div class="file has-name">
+                        <label class="file-label" style="width: 100%">
+                          <input
+                            id="input-pic"
+                            class="file-input"
+                            type="file"
+                            name="resume" 
+                            accept=".png, .jpg, .jpeg"/>
+                          <span class="file-cta">
+                            <span class="file-icon">
+                              <i class="fa fa-upload"></i>
+                            </span>
+                            업로드
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <nav class="level is-mobile">
+                    <div class="level-left"></div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <a
+                          class="button is-sparta"
+                          onclick="update_profile()">업데이트</a>
+                      </div>
+                      <div class="level-item">
+                        <a
+                          class="button is-sparta is-outlined"
+                          onclick='$("#modal-edit").addClass("is-hidden").removeClass("is-active")'>취소</a>
+                      </div>
+                    </div>
+                  </nav>
+                </div>
+              </article>
+            </div>
+          </div>
+          <button
+            class="modal-close is-large"
+            aria-label="close"
+            onclick='$("#modal-edit").removeClass("is-active")'></button>
+        </div>
+
+
+      </div>
+    </section>
+
+    <!-- 뎃글 -->
+    <section id="comments"></section>
+
+    <footer id="footer">© 2021 오늘뭐먹지? by 5조</footer>
+  </div>
+
+</div>
+</body>
+<script>
+
+    // 프로필클릭시 로그아웃버튼 show
+    $('.user').click(function(){
+      if($(".nav").hasClass("show")){
+        $(".nav").removeClass("show");
+      }else{
+        $(".nav").show()
+        $(".nav").addClass("show");
+      }
+    })
+
+</script>
+</html>
